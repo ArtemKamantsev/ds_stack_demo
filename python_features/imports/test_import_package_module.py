@@ -1,8 +1,7 @@
-from unittest import TestCase
+from typing import Callable
+from unittest import TestCase, TestSuite
 
 from python_features.statements.test_del_statement import *
-
-__all__ = ['Import']
 
 temp = (DelStatement,)  # just to keep import during imports optimization operation
 
@@ -25,15 +24,33 @@ class Import(TestCase):
         import python_features.statements
         import python_features.statements.test_del_statement as module
 
-        self.assertEqual(python_features.__name__, python_features.__package__, 'The name of the top level package '
-                                                                                'that contains the module is bound '
-                                                                                'in the local namespace as a reference '
-                                                                                'to the top level package.')
+        self.assertEqual(python_features.__name__, python_features.__package__,
+                         'The name of the top level package '
+                         'that contains the module is bound '
+                         'in the local namespace as a reference '
+                         'to the top level package.')
         self.assertNotEqual(module.__name__, module.__package__)
         self.assertEqual(module.__package__, python_features.statements.__name__, 'Fully qualified name'
-                                                                                  'must be used because no alias'
-                                                                                  'was used')
+                                                                                       'must be used because no alias'
+                                                                                       'was used')
 
     def test_top_level_package(self):
-        import main
-        self.assertIn(main.__package__, '', '__package__ should be set to the empty string for top-level modules')
+        import test_main
+        self.assertIn(test_main.__package__, '', '__package__ should be set to the empty string for top-level modules')
+
+
+def load_tests(loader, standard_tests, pattern):
+    return filter_tests(standard_tests, lambda test_id: 'DelStatement' not in test_id)
+
+
+def filter_tests(test: TestSuite, filtering_predicate: Callable[[str], bool]) -> TestSuite:
+    test_list = list(test.__iter__())
+    if len(test_list) == 0:
+        return test
+
+    if isinstance(test_list[0], TestCase):
+        test_list = list(filter(lambda test_case: filtering_predicate(test_case.id()), test_list))
+    else:
+        test_list = [filter_tests(test_suit, filtering_predicate) for test_suit in test_list]
+
+    return TestSuite(test_list)
