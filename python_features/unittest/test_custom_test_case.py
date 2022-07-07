@@ -1,6 +1,5 @@
-from unittest import TestCase, expectedFailure, FunctionTestCase
-
-__all__ = ['get_custom_test_cases']
+import unittest
+from unittest import TestCase
 
 
 def get_custom_test_cases():
@@ -23,8 +22,16 @@ def get_custom_test_cases():
             self.assertEqual(m1, m2)
 
     cases = (
-        FunctionTestCase(test_function),
+        # can't import FunctionTestCase directly because of test discovery algorithm
+        unittest.FunctionTestCase(test_function),
         TestClass('test_custom_type_equality_function'),
     )
 
     return cases
+
+
+def load_tests(loader, standard_tests, pattern):
+    test_list = get_custom_test_cases()
+    standard_tests.addTests(test_list)
+
+    return standard_tests

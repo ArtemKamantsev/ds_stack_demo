@@ -1,7 +1,5 @@
 from unittest import TestCase, skip, skipIf, skipUnless, SkipTest, expectedFailure
 
-__all__ = ['TestMethodSkipping', 'TestClassSkipping']
-
 
 class TestMethodSkipping(TestCase):
     @skip('demonstrating skipping')
