@@ -11,6 +11,13 @@ class Import(TestCase):
         with self.assertRaises(NameError):
             global_value  # import avoided by using '__all__' attribute + import * syntax
 
+    def test_name_binding(self):
+        import python_features.imports.sub1 as sub1
+        self.assertNotIn('sub2', dir(sub1))
+
+        import python_features.imports.sub1.sub2
+        self.assertIn('sub2', dir(sub1))
+
     def test_path(self):
         import python_features as package
         import python_features.statements.test_del_statement as module
@@ -31,8 +38,8 @@ class Import(TestCase):
                          'to the top level package.')
         self.assertNotEqual(module.__name__, module.__package__)
         self.assertEqual(module.__package__, python_features.statements.__name__, 'Fully qualified name'
-                                                                                       'must be used because no alias'
-                                                                                       'was used')
+                                                                                  'must be used because no alias'
+                                                                                  'was used')
 
     def test_top_level_package(self):
         import test_main
