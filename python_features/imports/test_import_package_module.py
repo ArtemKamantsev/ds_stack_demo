@@ -1,24 +1,26 @@
-from typing import Callable
+from typing import Callable, List
 from unittest import TestCase, TestSuite
 
 from python_features.statements.test_del_statement import *
+import unittest.suite
+from unittest.loader import TestLoader
 
-temp = (DelStatement,)  # just to keep import during imports optimization operation
+temp: tuple[type[DelStatement]] = (DelStatement,)  # just to keep import during imports optimization operation
 
 
 class Import(TestCase):
-    def test_redundant_imports(self):
+    def test_redundant_imports(self) -> None:
         with self.assertRaises(NameError):
             global_value  # import avoided by using '__all__' attribute + import * syntax
 
-    def test_name_binding(self):
+    def test_name_binding(self) -> None:
         import python_features.imports.sub1 as sub1
         self.assertNotIn('sub2', dir(sub1))
 
         import python_features.imports.sub1.sub2
         self.assertIn('sub2', dir(sub1))
 
-    def test_path(self):
+    def test_path(self) -> None:
         import python_features as package
         import python_features.statements.test_del_statement as module
 
@@ -27,7 +29,7 @@ class Import(TestCase):
         with self.assertRaises(AttributeError):
             module.__path__
 
-    def test_name_package(self):
+    def test_name_package(self) -> None:
         import python_features.statements
         import python_features.statements.test_del_statement as module
 
@@ -41,17 +43,17 @@ class Import(TestCase):
                                                                                   'must be used because no alias'
                                                                                   'was used')
 
-    def test_top_level_package(self):
+    def test_top_level_package(self) -> None:
         import test_main
         self.assertIn(test_main.__package__, '', '__package__ should be set to the empty string for top-level modules')
 
 
-def load_tests(loader, standard_tests, pattern):
+def load_tests(loader: TestLoader, standard_tests: TestSuite, pattern: str) -> TestSuite:
     return filter_tests(standard_tests, lambda test_id: 'DelStatement' not in test_id)
 
 
 def filter_tests(test: TestSuite, filtering_predicate: Callable[[str], bool]) -> TestSuite:
-    test_list = list(test.__iter__())
+    test_list: list[TestCase | TestSuite] = list(test.__iter__())
     if len(test_list) == 0:
         return test
 

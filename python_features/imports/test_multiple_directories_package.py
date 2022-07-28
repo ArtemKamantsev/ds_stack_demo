@@ -6,5 +6,5 @@ __all__ = ['TestMultipleDirectories']
 
 
 class TestMultipleDirectories(TestCase):
-    def test_variable_imported(self):
+    def test_variable_imported(self) -> None:
         self.assertEqual(variable, 42)

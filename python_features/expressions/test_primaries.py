@@ -3,12 +3,14 @@ from unittest import TestCase
 
 
 class TestPrimaries(TestCase):
-    def test_custom_attribute_access(self):
+    def test_custom_attribute_access(self) -> None:
         class Custom:  # just kidding, you should never do so :)
+            a: int
+
             def __init__(self):
                 self.a = 0
 
-            def __setattr__(self, name: str, value: Any) -> None:
+            def __setattr__(self, name: str, value: int) -> None:
                 super().__setattr__(name, value + 1)
 
             def __getattribute__(self, name: str) -> Any:
@@ -18,7 +20,7 @@ class TestPrimaries(TestCase):
 
                 return default_value
 
-        c = Custom()
+        c: Custom = Custom()
         self.assertEqual(c.a, 1)
         self.assertEqual(c.a, 3)
         self.assertEqual(c.a, 5)

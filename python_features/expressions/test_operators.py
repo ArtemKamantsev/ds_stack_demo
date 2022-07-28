@@ -1,13 +1,16 @@
 from unittest import TestCase
+from numbers import Number
 
 
 class TestOperators(TestCase):
-    def test_power(self):
+    def test_power(self) -> None:
         self.assertEqual(-2 ** 2, -4)
 
-    def test_unary(self):
+    def test_unary(self) -> None:
         class CustomUnary:
-            def __init__(self, value):
+            value: int | float
+
+            def __init__(self, value: int | float):
                 self.value = value
 
             def __neg__(self):
@@ -23,29 +26,29 @@ class TestOperators(TestCase):
         self.assertEqual(+CustomUnary(2), 8)
         self.assertEqual(~CustomUnary(2), -2)
 
-    def test_sequence_multiplication(self):
+    def test_sequence_multiplication(self) -> None:
         self.assertEqual([1, 2] * 2, [1, 2, 1, 2])
 
-        references_copied = [[1]] * 2
+        references_copied: list[list[int]] = [[1]] * 2
         self.assertIs(references_copied[0], references_copied[1])
 
         self.assertEqual([1] * -1, [])
 
-    def test_shift_priority(self):
+    def test_shift_priority(self) -> None:
         self.assertEqual(1 << 1 + 1, 4)
 
-    def test_comparison(self):
+    def test_comparison(self) -> None:
         self.assertEqual(1 < 3 > 2, True)  # ugly but funny :)
 
-    def test_assignment(self):
-        def get_value():
+    def test_assignment(self) -> None:
+        def get_value() -> int:
             return 42
 
         if v := get_value():
             self.assertEqual(v, 42)
 
-    def test_return(self):
-        def get_scalar_value():
+    def test_return(self) -> None:
+        def get_scalar_value() -> int:
             v = 0
             try:
                 return v
@@ -54,7 +57,7 @@ class TestOperators(TestCase):
 
         self.assertEqual(get_scalar_value(), 0)
 
-        def get_object_value():
+        def get_object_value() -> list[int]:
             v = [0]
             try:
                 return v
@@ -63,7 +66,7 @@ class TestOperators(TestCase):
 
         self.assertEqual(get_object_value(), [42])
 
-    def test_raise(self):
+    def test_raise(self) -> None:
         with self.assertRaises(RuntimeError):
             raise  # If there isn’t currently an active exception, a RuntimeError exception is raised
 
@@ -89,8 +92,8 @@ class TestOperators(TestCase):
         except ArithmeticError as e:
             self.assertIs(type(e.__context__), RuntimeError)
 
-    def test_break(self):
-        v_scalar = 0
+    def test_break(self) -> None:
+        v_scalar: int = 0
         for i in range(1):
             try:
                 break
@@ -99,8 +102,8 @@ class TestOperators(TestCase):
 
         self.assertEqual(v_scalar, 42)
 
-    def test_continue(self):
-        v_scalar = 0
+    def test_continue(self) -> None:
+        v_scalar: int = 0
         for i in range(1):
             try:
                 continue

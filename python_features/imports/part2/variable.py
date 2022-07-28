@@ -1,1 +1,1 @@
-variable = 42
+variable: int = 42

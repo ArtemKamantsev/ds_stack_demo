@@ -1,29 +1,42 @@
+from numbers import Number
+from typing import Callable, ParamSpec, TypeVar
 from unittest import TestCase
 
 
 class TestDecorators(TestCase):
-    def test_function_decorator(self):
-        def multiply(factor):
-            def decorator(f):
-                return lambda *args, **kwargs: f(*args, **kwargs) * factor
+    def test_function_decorator(self) -> None:
+        P = ParamSpec('P')
+
+        def multiply(factor: Number) -> Callable[[Callable[[P], Number]], Callable[[P], Number]]:
+            def decorator(f: Callable[[P], Number]) -> Callable[[P], Number]:
+                def modified_f(*args: P.args, **kwargs: P.kwargs) -> Number:
+                    return f(*args, **kwargs) * factor
+
+                return modified_f
 
             return decorator
 
         @multiply(2)
-        def get_value():
+        def get_value() -> int:
             return 42
 
-        self.assertEqual(get_value(), 84)
+        self.assertEqual(get_value(), 42 * 2)
 
-    def test_class_decorator(self):
-        def replace_type(desired_type):
+    def test_class_decorator(self) -> None:
+        DesiredType = TypeVar('DesiredType')
+
+        def replace_type(desired_type: DesiredType) -> Callable[[type], DesiredType]:
             return lambda given_type: desired_type
 
         class A:
+            value: int
+
             def __init__(self):
                 self.value = 42
 
         class B:
+            value: int
+
             def __init__(self):
                 self.value = 0
 
@@ -31,11 +44,13 @@ class TestDecorators(TestCase):
 
         @replace_type(A)
         class C:
+            value: int
+
             def __init__(self):
                 self.value = 1
 
-        b = B()  # actually, 'B' and 'C' types aren't present anymore, these names just refer to type 'A'
-        c = C()
+        b: B = B()  # actually, 'B' and 'C' types aren't present anymore, these names just refer to type 'A'
+        c: C = C()
         self.assertEqual(b.value, 42)
         self.assertIsInstance(b, A)
         self.assertIs(B, A)

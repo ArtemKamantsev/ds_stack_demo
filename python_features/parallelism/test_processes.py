@@ -1,57 +1,61 @@
 from multiprocessing import Process, Queue, Pipe, Lock, Value
+from multiprocessing.connection import Connection
 from multiprocessing.managers import SharedMemoryManager
-from multiprocessing.shared_memory import SharedMemory
+from multiprocessing.shared_memory import SharedMemory, ShareableList
 from concurrent.futures import ProcessPoolExecutor
+from typing import Tuple
 from unittest import TestCase
 
 
-def _queue_child_process(q):
+def _queue_child_process(q: Queue) -> None:
     q.put(42)
 
 
-def _pipe_child_process(conn):
+def _pipe_child_process(conn: Connection) -> None:
     conn.send(42)
     conn.close()
 
 
-def _increment(variable):
+def _increment(variable: Value) -> None:
     variable.value = variable.value + 1
 
 
-def _increment_shared_memory(name, lock):
-    memory = SharedMemory(name, create=False)
+def _increment_shared_memory(name: str, lock: Lock) -> None:
+    memory: SharedMemory = SharedMemory(name, create=False)
     with lock:
         memory.buf[0] += 1
     memory.close()
 
 
-def _increment_shared_memory_at(data, idx):
+def _increment_shared_memory_at(data: ShareableList, idx: int) -> None:
     data[idx] += 1
 
 
 class DataExchange(TestCase):
 
-    def test_queue(self):
-        queue = Queue()
+    def test_queue(self) -> None:
+        queue: Queue = Queue()
 
-        p = Process(target=_queue_child_process, args=(queue,))
+        p: Process = Process(target=_queue_child_process, args=(queue,))
         p.start()
         self.assertEqual(queue.get(), 42)
         p.join()
 
-    def test_pipe(self):
+    def test_pipe(self) -> None:
+        child_conn: Connection
+        child_conn: Connection
         parent_conn, child_conn = Pipe()
 
-        p = Process(target=_pipe_child_process, args=(child_conn,))
+        p: Process = Process(target=_pipe_child_process, args=(child_conn,))
         p.start()
         self.assertEqual(parent_conn.recv(), 42)
         p.join()
 
-    def test_shared_value(self):
-        num = Value('d', 0)
+    def test_shared_value(self) -> None:
+        num: Value = Value('d', 0)
 
-        number_of_processes = 2
-        processes = [Process(target=_increment, args=(num,)) for _ in range(number_of_processes)]
+        number_of_processes: int = 2
+        processes: tuple[Process] = tuple(Process(target=_increment, args=(num,)) for _ in range(number_of_processes))
         for p in processes:
             p.start()
         for p in processes:
@@ -59,15 +63,15 @@ class DataExchange(TestCase):
 
         self.assertEqual(num.value, number_of_processes)
 
-    def test_shared_memory(self):
-        name = 'test'
-        memory = SharedMemory(name, create=True, size=1)
-        memory_lock = Lock()
+    def test_shared_memory(self) -> None:
+        name: str = 'test'
+        memory: SharedMemory = SharedMemory(name, create=True, size=1)
+        memory_lock: Lock = Lock()
         memory.buf[0] = 0
 
-        number_of_processes = 2
-        processes = [Process(target=_increment_shared_memory, args=(name, memory_lock))
-                     for _ in range(number_of_processes)]
+        number_of_processes: int = 2
+        processes: tuple[Process] = tuple(Process(target=_increment_shared_memory, args=(name, memory_lock))
+                                          for _ in range(number_of_processes))
         for p in processes:
             p.start()
         for p in processes:
@@ -77,13 +81,13 @@ class DataExchange(TestCase):
         memory.close()
         memory.unlink()  # should be called only once
 
-    def test_shared_memory_manager(self):
-        number_of_processes = 2
+    def test_shared_memory_manager(self) -> None:
+        number_of_processes: int = 2
         with SharedMemoryManager() as smm:
-            data = smm.ShareableList([0] * number_of_processes)
+            data: ShareableList = smm.ShareableList([0] * number_of_processes)
 
-            processes = [Process(target=_increment_shared_memory_at, args=(data, i))
-                         for i in range(number_of_processes)]
+            processes: tuple[Process] = tuple(Process(target=_increment_shared_memory_at, args=(data, i))
+                                              for i in range(number_of_processes))
             for p in processes:
                 p.start()
             for p in processes:

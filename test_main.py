@@ -1,11 +1,11 @@
 import unittest
-from unittest import TestCase, expectedFailure
+from unittest import TestCase, expectedFailure, TestSuite
 
 
 class ClassScope(TestCase):
     class_variable = 0
 
-    def test_class_variable(self):
+    def test_class_variable(self) -> None:
         # The scope of names defined in a class block is limited to the class block;
         # it does not extend to the code blocks of methods
         with self.assertRaises(NameError):

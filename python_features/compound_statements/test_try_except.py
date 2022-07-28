@@ -1,9 +1,10 @@
 import sys
+from types import TracebackType
 from unittest import TestCase
 
 
 class TestTryExcept(TestCase):
-    def test_except_name(self):
+    def test_except_name(self) -> None:
         try:
             raise
         except RuntimeError as e:
@@ -12,7 +13,11 @@ class TestTryExcept(TestCase):
         with self.assertRaises(NameError):
             ex = e  # the name is cleared
 
-    def test_access_exception(self):
+    def test_access_exception(self) -> None:
+        error_type: type[RuntimeError]
+        error: RuntimeError
+        traceback: TracebackType
+
         try:
             raise
         except:
@@ -26,8 +31,8 @@ class TestTryExcept(TestCase):
             self.assertIsNone(error)
             self.assertIsNone(traceback)
 
-    def test_return_override(self):
-        def get_value():
+    def test_return_override(self) -> None:
+        def get_value() -> int:
             try:
                 return 0
             finally:
