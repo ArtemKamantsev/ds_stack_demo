@@ -36,6 +36,18 @@ class TestTryExcept(TestCase):
             try:
                 return 0
             finally:
+
+                return 42
+
+        self.assertEqual(get_value(), 42)
+
+    def test_return_exception(self) -> None:
+        def get_value() -> int:
+            # pylint: disable=lost-exception
+            try:
+                # pylint: disable=misplaced-bare-raise
+                raise
+            finally:
                 return 42
 
         self.assertEqual(get_value(), 42)
