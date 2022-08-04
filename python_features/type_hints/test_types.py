@@ -8,6 +8,7 @@ class TestTypeHints(TestCase):
         l1 = Literal[non_hashable_value]
         l2 = Literal[non_hashable_value]
         with self.assertRaises(TypeError):
+            # pylint: disable=unused-variable
             is_equal: bool = l1 == l2
 
     def test_runtime_checkable(self) -> None:

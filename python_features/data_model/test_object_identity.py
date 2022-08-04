@@ -1,12 +1,11 @@
 from unittest import TestCase
-from typing import Union
 
 
 class Mock:
-    p: str | int
+    param: str | int
 
     def __init__(self, param: str | int) -> None:
-        self.p = param
+        self.param = param
 
 
 class ObjectId(TestCase):

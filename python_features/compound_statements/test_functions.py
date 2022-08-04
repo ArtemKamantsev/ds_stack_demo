@@ -5,10 +5,11 @@ from typing import ClassVar
 class TestFunction(TestCase):
     def test_default_value(self) -> None:
         class DefaultValue:
-            value: ClassVar[int] = 0
             value: int
+            value: ClassVar[int] = 0
 
             def __init__(self):
+                # pylint: disable=no-member
                 DefaultValue.value += 1
                 self.value = DefaultValue.value
 

@@ -1,5 +1,4 @@
 from unittest import TestCase
-from numbers import Number
 
 
 class TestOperators(TestCase):
@@ -38,39 +37,42 @@ class TestOperators(TestCase):
         self.assertEqual(1 << 1 + 1, 4)
 
     def test_comparison(self) -> None:
+        # pylint: disable=comparison-of-constants
         self.assertEqual(1 < 3 > 2, True)  # ugly but funny :)
 
     def test_assignment(self) -> None:
         def get_value() -> int:
             return 42
 
-        if v := get_value():
-            self.assertEqual(v, 42)
+        if value := get_value():
+            self.assertEqual(value, 42)
 
     def test_return(self) -> None:
         def get_scalar_value() -> int:
-            v = 0
+            value = 0
             try:
-                return v
+                return value
             finally:
-                v = 42
+                value = 42
 
         self.assertEqual(get_scalar_value(), 0)
 
         def get_object_value() -> list[int]:
-            v = [0]
+            value = [0]
             try:
-                return v
+                return value
             finally:
-                v[0] = 42
+                value[0] = 42
 
         self.assertEqual(get_object_value(), [42])
 
     def test_raise(self) -> None:
         with self.assertRaises(RuntimeError):
+            # pylint: disable=misplaced-bare-raise
             raise  # If there isn’t currently an active exception, a RuntimeError exception is raised
 
         with self.assertRaises(ArithmeticError):
+            # pylint: disable=try-except-raise
             try:
                 raise ArithmeticError  # object is instantiated using default constructor
             except ArithmeticError:
@@ -78,23 +80,26 @@ class TestOperators(TestCase):
 
         try:
             try:
+                # pylint: disable=misplaced-bare-raise
                 raise
-            except RuntimeError as e:
-                raise ArithmeticError from e  # sets 'e' as '__cause__' of raised ArithmeticError
-        except ArithmeticError as e:
-            self.assertIs(type(e.__cause__), RuntimeError)
+            except RuntimeError as error:
+                raise ArithmeticError from error  # sets 'e' as '__cause__' of raised ArithmeticError
+        except ArithmeticError as error:
+            self.assertIs(type(error.__cause__), RuntimeError)
 
         try:
             try:
+                # pylint: disable=misplaced-bare-raise
                 raise
             except RuntimeError:
+                # pylint: disable=raise-missing-from
                 raise ArithmeticError  # sets currently active exception as '__context__' of raised ArithmeticError
-        except ArithmeticError as e:
-            self.assertIs(type(e.__context__), RuntimeError)
+        except ArithmeticError as error:
+            self.assertIs(type(error.__context__), RuntimeError)
 
     def test_break(self) -> None:
         v_scalar: int = 0
-        for i in range(1):
+        for _ in range(1):
             try:
                 break
             finally:
@@ -104,7 +109,7 @@ class TestOperators(TestCase):
 
     def test_continue(self) -> None:
         v_scalar: int = 0
-        for i in range(1):
+        for _ in range(1):
             try:
                 continue
             finally:

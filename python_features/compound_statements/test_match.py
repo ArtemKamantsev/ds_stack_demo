@@ -9,9 +9,9 @@ class TestMatch(TestCase):
         match test_value:
             case 1, 2 if False:
                 self.fail()
-            case (2, y) | (1, y) as x:  # only this one should be evaluated
-                self.assertEqual(y, 2)
-                self.assertEqual(x[1], 2)
+            case (2, second) | (1, second) as full_value:  # only this one should be evaluated
+                self.assertEqual(second, 2)
+                self.assertEqual(full_value[1], 2)
             case _:
                 self.fail()
 
@@ -36,6 +36,7 @@ class TestMatch(TestCase):
                 self.fail()
 
     def test_mapping_pattern(self) -> None:
+        # pylint: disable=invalid-name
         Profile = TypedDict('Profile', {'age': int, 'height': Number})
 
         test_mapping: Profile = {
@@ -49,6 +50,7 @@ class TestMatch(TestCase):
                 self.fail()
 
     def test_class_pattern(self) -> None:
+        # pylint: disable=invalid-name
         ValueHolder = TypedDict('ValueHolder', {'value': int})
 
         test_mapping: ValueHolder = {

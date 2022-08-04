@@ -1,7 +1,7 @@
 import asyncio
 import time
 from asyncio import Task, Future
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import ThreadPoolExecutor, Future as ConcurrentFuture
 from threading import Thread
 from typing import Any
 from collections.abc import Coroutine, Awaitable
@@ -12,7 +12,7 @@ class TestCoroutines(TestCase):
     def test_future(self) -> None:
         async def get_value() -> int:
             with ThreadPoolExecutor(1) as executor:
-                future_value: Future[int] = executor.submit(lambda: 42)  # this future is not awaitable
+                future_value: ConcurrentFuture[int] = executor.submit(lambda: 42)  # this future is not awaitable
             value: int = await asyncio.wrap_future(future_value)
             return value
 
@@ -34,18 +34,18 @@ class TestCoroutines(TestCase):
                 asyncio.run(set_value(42))  # one thread allows one event loop
             self.assertEqual(value, 0)
 
-            t: Thread = Thread(target=run_other_thread)  # different threads could have own event loops
-            t.start()
-            t.join()
+            thread: Thread = Thread(target=run_other_thread)  # different threads could have own event loops
+            thread.start()
+            thread.join()
             self.assertEqual(value, 42)
 
         asyncio.run(run())
 
     def test_tasks(self) -> None:
-        s: set[int] = set()
+        data: set[int] = set()
 
         async def put(num: int) -> None:
-            s.add(num)
+            data.add(num)
 
         with self.assertRaises(RuntimeError):
             # there is no event loop
@@ -59,7 +59,7 @@ class TestCoroutines(TestCase):
 
         asyncio.run(run())
 
-        self.assertEqual(s, {0, 1})
+        self.assertEqual(data, {0, 1})
 
     def test_shield(self) -> None:
         async def get() -> int:
@@ -83,10 +83,10 @@ class TestCoroutines(TestCase):
     def test_shield_deep(self) -> None:
         value: int = 0
 
-        async def set_value(v: int) -> None:
+        async def set_value(arg_value: int) -> None:
             nonlocal value
             await asyncio.sleep(0.001)
-            value = v
+            value = arg_value
 
         async def set_executor(task: Awaitable) -> None:
             await task
@@ -109,10 +109,10 @@ class TestCoroutines(TestCase):
     def test_shield_wait(self) -> None:
         value: int = 0
 
-        async def set_value(v: int) -> None:
+        async def set_value(arg_value: int) -> None:
             nonlocal value
             await asyncio.sleep(0.001)
-            value = v
+            value = arg_value
 
         async def run() -> None:
             await asyncio.wait_for(set_value(1), 0.1)
@@ -150,11 +150,11 @@ class TestCoroutines(TestCase):
             return await Process(start_value)
 
         async def run():
-            t1: Task[int] = asyncio.create_task(start_process(1))  # schedule first process
-            t2: Task[int] = asyncio.create_task(start_process(3))  # schedule second process
+            task1: Task[int] = asyncio.create_task(start_process(1))  # schedule first process
+            task2: Task[int] = asyncio.create_task(start_process(3))  # schedule second process
 
-            start_value_1: int = await t1  # release looper to start working on processes
-            start_value_3: int = await t2
+            start_value_1: int = await task1  # release looper to start working on processes
+            start_value_3: int = await task2
 
             self.assertEqual(start_value_1, 1)
             self.assertEqual(start_value_3, 3)
@@ -171,7 +171,7 @@ class TestCoroutines(TestCase):
 
             def __await__(self) -> float:
                 looper = asyncio.get_running_loop()
-                f = looper.create_future()
+                f: Future[Any] = looper.create_future()
                 f._asyncio_future_blocking = True
                 # analogy of triggering io event (then looper found any from system in buffer)
                 # Future enables integration with low-level callback-based code

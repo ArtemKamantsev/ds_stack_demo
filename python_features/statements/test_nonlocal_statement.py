@@ -2,13 +2,14 @@ from unittest import TestCase
 
 __all__ = ['NonlocalStatement']
 
-global_value: int = 0
+GLOBAL_VALUE: int = 0
 
 
 class NonlocalStatement(TestCase):
     def setUp(self) -> None:
-        global global_value
-        global_value = 0
+        # pylint: disable=global-statement
+        global GLOBAL_VALUE
+        GLOBAL_VALUE = 0
 
     def test_access_nonlocal_without_nonlocal_statement(self) -> None:
         local_value: int = 0
@@ -20,9 +21,11 @@ class NonlocalStatement(TestCase):
                                               'In this case "local_value" is a free variable')
 
     def test_redefine_free_variable(self) -> None:
+        # pylint: disable=unused-variable
         free_value: int = 0
 
         def read() -> int:
+            # pylint: disable=used-before-assignment
             value: int = free_value  # local variable 'free_value' referenced before assignment
             free_value: int = value
 
@@ -35,6 +38,7 @@ class NonlocalStatement(TestCase):
         local_value: int = 0
 
         def modify() -> None:
+            # pylint: disable=unused-variable
             local_value = 42
 
         modify()
@@ -48,7 +52,7 @@ class NonlocalStatement(TestCase):
         def modify() -> None:
             # v = local_value  # SyntaxError: name 'local_value' is used prior to nonlocal declaration
             # local_value = -1 # SyntaxError: name 'local_value' is assigned to before nonlocal declaration
-            # nonlocal global_value  # SyntaxError: no binding for nonlocal 'global_value' found
+            # nonlocal GLOBAL_VALUE  # SyntaxError: no binding for nonlocal 'GLOBAL_VALUE' found
             nonlocal local_value
             local_value = 42
 
@@ -96,9 +100,11 @@ class NonlocalStatement(TestCase):
         pass
 
     def test_read_free_variable_in_exec_without_context(self) -> None:
+        # pylint: disable=unused-variable
         local_variable: int = 0
 
         def read() -> None:
+            # pylint: disable=exec-used
             exec("value = local_variable")
 
         with self.assertRaises(NameError):
@@ -108,6 +114,7 @@ class NonlocalStatement(TestCase):
         local_variable: int = 0
 
         def read() -> None:
+            # pylint: disable=exec-used
             exec("value = local_variable", {'local_variable': local_variable})
 
         self.assertIsNone(read())

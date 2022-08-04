@@ -6,10 +6,12 @@ class TestMethodSkipping(TestCase):
     def test_skipping1(self) -> None:
         self.fail()
 
+    # pylint: disable=comparison-of-constants
     @skipIf(0 < 1, 'demonstrating skipping')
     def test_skipping2(self) -> None:
         self.fail()
 
+    # pylint: disable=comparison-of-constants
     @skipUnless(0 > 1, 'demonstrating skipping')
     def test_skipping3(self) -> None:
         self.fail()

@@ -13,4 +13,5 @@ class TestSlots(TestCase):
             __slots__ = []
 
         with self.assertRaises(AttributeError):
-            d: dict[str, Any] = CommonSlots().__dict__
+            # pylint: disable=unused-variable
+            variables: dict[str, Any] = CommonSlots().__dict__

@@ -5,6 +5,7 @@ from unittest import TestCase
 
 class TestDecorators(TestCase):
     def test_function_decorator(self) -> None:
+        # pylint: disable=invalid-name
         P = ParamSpec('P')
 
         def multiply(factor: Number) -> Callable[[Callable[[P], Number]], Callable[[P], Number]]:
@@ -23,6 +24,7 @@ class TestDecorators(TestCase):
         self.assertEqual(get_value(), 42 * 2)
 
     def test_class_decorator(self) -> None:
+        # pylint: disable=invalid-name
         DesiredType = TypeVar('DesiredType')
 
         def replace_type(desired_type: DesiredType) -> Callable[[type], DesiredType]:

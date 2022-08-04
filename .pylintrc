@@ -151,7 +151,11 @@ disable=raw-checker-failed,
         suppressed-message,
         useless-suppression,
         deprecated-pragma,
-        use-symbolic-message-instead
+        use-symbolic-message-instead,
+        missing-module-docstring,
+        missing-class-docstring,
+        missing-function-docstring,
+        too-few-public-methods,
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -231,7 +235,8 @@ function-naming-style=snake_case
 # Regular expression matching correct function names. Overrides function-
 # naming-style. If left empty, function names will be checked with the set
 # naming style.
-#function-rgx=
+# Analogue of 'good-names' for function names wasn't found, what is why this regex is used
+function-rgx=([a-z0-9_]{2,30}|f)$
 
 # Good variable names which should always be accepted, separated by a comma.
 good-names=i,
@@ -239,7 +244,8 @@ good-names=i,
            k,
            ex,
            Run,
-           _
+           _,
+           f
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted

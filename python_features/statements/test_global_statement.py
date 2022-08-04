@@ -2,61 +2,68 @@ from unittest import TestCase
 
 __all__ = ['GlobalStatement']
 
-global_value: int = 0
+GLOBAL_VALUE: int = 0
 
 
 class GlobalStatement(TestCase):
     def setUp(self) -> None:
-        global global_value
-        global_value = 0
+        # pylint: disable=global-statement
+        global GLOBAL_VALUE
+        GLOBAL_VALUE = 0
 
     def test_access_global_without_global_statement(self) -> None:
-        self.assertEqual(global_value, 0, 'We can access global variable without "global" statement usage. '
-                                          'In this case "global_value" is a free variable')
+        self.assertEqual(GLOBAL_VALUE, 0, 'We can access global variable without "global" statement usage. '
+                                          'In this case "GLOBAL_VALUE" is a free variable')
 
     def test_modify_global_without_global_statement(self) -> None:
         def modify() -> None:
-            global_value = 42
+            # pylint: disable=redefined-outer-name, invalid-name, unused-variable
+            GLOBAL_VALUE = 42
 
         modify()
-        self.assertNotEqual(global_value, 42, 'We cannot modify global variable without "global" statement usage.'
+        self.assertNotEqual(GLOBAL_VALUE, 42, 'We cannot modify global variable without "global" statement usage.'
                                               'Shadowing local variable will be just declared.')
 
     def test_modify_global_with_global_statement(self) -> None:
-        # def modify(global_value)  # Names listed in a global statement must not be defined as formal parameters
+        # def modify(GLOBAL_VALUE)  # Names listed in a global statement must not be defined as formal parameters
         def modify() -> None:
-            # v = global_value  # SyntaxError: name 'global_value' is used prior to global declaration
-            # global_value = -1  # SyntaxError: name 'global_value' is assigned to before global declaration
-            global global_value
-            global_value = 42
+            # v = GLOBAL_VALUE  # SyntaxError: name 'GLOBAL_VALUE' is used prior to global declaration
+            # GLOBAL_VALUE = -1  # SyntaxError: name 'GLOBAL_VALUE' is assigned to before global declaration
+            # pylint: disable=global-statement
+            global GLOBAL_VALUE
+            GLOBAL_VALUE = 42
 
         modify()
-        self.assertEqual(global_value, 42, 'We can modify global variable with "global" statement usage.')
+        self.assertEqual(GLOBAL_VALUE, 42, 'We can modify global variable with "global" statement usage.')
 
     def test_global_and_nonlocal_usage(self) -> None:
-        global_value: int = -1  # shadowing local variable
+        # pylint: disable=redefined-outer-name, invalid-name
+        GLOBAL_VALUE: int = -1  # shadowing local variable
 
         def modify() -> None:
-            global global_value
+            # pylint: disable=global-statement
+            global GLOBAL_VALUE
 
             def read_global() -> int:
-                return global_value
+                return GLOBAL_VALUE
 
-            global_value = read_global() + 1
+            GLOBAL_VALUE = read_global() + 1
 
         modify()
-        self.assertEqual(global_value, -1, 'Local variables does not affect global statement behaviour')
+        self.assertEqual(GLOBAL_VALUE, -1, 'Local variables does not affect global statement behaviour')
 
-        temp: int = global_value
+        temp: int = GLOBAL_VALUE
 
         def read() -> None:
-            global global_value
-            self.assertNotEqual(global_value, temp + 1, 'Local variables does not affect global statement behaviour')
+            # pylint: disable=global-variable-not-assigned
+            global GLOBAL_VALUE
+            self.assertNotEqual(GLOBAL_VALUE, temp + 1, 'Local variables does not affect global statement behaviour')
 
         read()
 
     def test_create_global_with_global_statement(self) -> None:
         def create() -> None:
+            # pylint: disable=invalid-name, global-variable-not-assigned, global-variable-undefined
             global global_value_undeclared
             global_value_undeclared = 42
 
@@ -65,19 +72,21 @@ class GlobalStatement(TestCase):
 
     def test_modify_global_in_exec(self) -> None:
         def modify() -> None:
-            global global_value
-            exec("global_value=42")
+            # pylint: disable=global-variable-not-assigned, exec-used
+            global GLOBAL_VALUE
+            exec("GLOBAL_VALUE=42")
 
         modify()
-        self.assertNotEqual(global_value, 42, 'Code contained in a string supplied to "exec" is unaffected by global '
+        self.assertNotEqual(GLOBAL_VALUE, 42, 'Code contained in a string supplied to "exec" is unaffected by global '
                                               'statements in the code containing the function call')
 
     def test_modify_global_out_of_exec(self) -> None:
         def modify() -> None:
-            exec("global global_value")
-            global_value = 42
+            # pylint: disable=exec-used, redefined-outer-name, invalid-name, unused-variable
+            exec("global GLOBAL_VALUE")
+            GLOBAL_VALUE = 42
 
         modify()
-        self.assertNotEqual(global_value, 42, 'A "global" statement contained in a string or code object supplied to '
+        self.assertNotEqual(GLOBAL_VALUE, 42, 'A "global" statement contained in a string or code object supplied to '
                                               'the built-in exec() function does not affect the code block containing '
                                               'the function call')
