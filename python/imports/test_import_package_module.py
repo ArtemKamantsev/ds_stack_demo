@@ -3,7 +3,7 @@ from unittest import TestCase, TestSuite
 
 from unittest.loader import TestLoader
 # pylint: disable=wildcard-import, unused-wildcard-import
-from python_features.statements.test_del_statement import *
+from python.statements.test_del_statement import *
 
 temp: tuple[type[DelStatement]] = (DelStatement,)  # just to keep import during imports optimization operation
 
@@ -16,17 +16,17 @@ class Import(TestCase):
 
     def test_name_binding(self) -> None:
         # pylint: disable=import-outside-toplevel
-        from python_features.imports import sub1
+        from python.imports import sub1
         self.assertNotIn('sub2', dir(sub1))
 
         # pylint: disable=unused-import
-        import python_features.imports.sub1.sub2
+        import python.imports.sub1.sub2
         self.assertIn('sub2', dir(sub1))
 
     def test_path(self) -> None:
         # pylint: disable=import-outside-toplevel
-        import python_features as package
-        import python_features.statements.test_del_statement as module
+        import python as package
+        import python.statements.test_del_statement as module
 
         self.assertIsNotNone(package.__path__, 'Packages - are modules and has a __path__ attribute')
         # Non package modules do not have a __path__ attribute
@@ -36,16 +36,16 @@ class Import(TestCase):
 
     def test_name_package(self) -> None:
         # pylint: disable=import-outside-toplevel
-        import python_features.statements
-        import python_features.statements.test_del_statement as module
+        import python.statements
+        import python.statements.test_del_statement as module
 
-        self.assertEqual(python_features.__name__, python_features.__package__,
+        self.assertEqual(python.__name__, python.__package__,
                          'The name of the top level package '
                          'that contains the module is bound '
                          'in the local namespace as a reference '
                          'to the top level package.')
         self.assertNotEqual(module.__name__, module.__package__)
-        self.assertEqual(module.__package__, python_features.statements.__name__, 'Fully qualified name'
+        self.assertEqual(module.__package__, python.statements.__name__, 'Fully qualified name'
                                                                                   'must be used because no alias'
                                                                                   'was used')
 

@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 # pylint: disable=no-name-in-module, import-error
-from python_features.imports.part1.variable import variable
+from python.imports.part1.variable import variable
 
 __all__ = ['TestMultipleDirectories']
 
