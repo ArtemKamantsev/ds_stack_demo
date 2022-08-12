@@ -111,3 +111,11 @@ class TestNdArrays(TestCase):
         with self.assertRaises(ValueError):
             # pylint: disable=unused-variable
             result: np.ndarray = array_first + array_second
+
+    def test_masked_array(self):
+        data: list[int | None] = [1, np.nan, 3]
+        regular_array = np.array(data)
+        masked_array: np.ma.masked_array = np.ma.masked_array(data, mask=[False, True, False])
+
+        self.assertTrue(np.isnan(regular_array.sum()))
+        self.assertEqual(masked_array.sum(), 4)
