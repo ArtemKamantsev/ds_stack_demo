@@ -1,8 +1,8 @@
 from unittest import TestCase
-
 import numpy as np
 
 
+# pylint: disable=unsubscriptable-object
 class TestNdArrays(TestCase):
     def test_matrix_product(self) -> None:
         matrix1: np.ndarray = np.empty(2, dtype=int)
@@ -76,6 +76,7 @@ class TestNdArrays(TestCase):
 
     def test_assignment(self) -> None:
         array: np.ndarray = np.arange(2)
+        # pylint: disable=unsupported-assignment-operation
         array[np.zeros(2, dtype=int)] += 1
 
         self.assertEqual(array[0], 1)

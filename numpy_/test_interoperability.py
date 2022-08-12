@@ -7,6 +7,7 @@ import numpy as np
 class TestInteroperability(TestCase):
     def test_array_interface(self) -> None:
         array: np.ndarray = np.arange(6).reshape((2, 3))
+        # pylint: disable=no-member
         array_interface: dict[str, Any] = array.__array_interface__.copy()
         array_interface['shape'] = (3, 2)
 
@@ -22,4 +23,5 @@ class TestInteroperability(TestCase):
         array_from_view[0, 0] = 42
 
         self.assertEqual(array_from_view.shape, (3, 2))
+        # pylint: disable=unsubscriptable-object
         self.assertEqual(array[0, 0], 42)
