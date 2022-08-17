@@ -110,7 +110,7 @@ class TestCustomArrayContainers(TestCase):
         random_image_scaled: np.ndarray = np.multiply(random_image, 1 / 255)
         self.assertTrue(isinstance(random_image_scaled, np.ndarray))
         self.assertEqual(random_image_scaled.shape, (2, 2))
-        self.assertEqual(random_image_scaled.dtype, np.float)
+        self.assertEqual(random_image_scaled.dtype, float)
         # pylint: disable=unexpected-keyword-arg
         self.assertLess(random_image_scaled.max(initial=-1), 1)
 
