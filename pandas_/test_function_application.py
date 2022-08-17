@@ -23,11 +23,11 @@ class TestFunctionApplication(TestCase):
     def test_transform_df(self):
         df: pd.DataFrame = pd.DataFrame(np.ones((2, 2)), columns=['A', 'B'], dtype=int)
 
-        add_1: Callable[[pd.Series], pd.Series] = partial(self.add, n=1)
+        add_1: Callable[[pd.Series], pd.Series] = partial(self.add, term=1)
         add_1.__name__ = 'add_1'
-        add_2: Callable[[pd.Series], pd.Series] = partial(self.add, n=2)
+        add_2: Callable[[pd.Series], pd.Series] = partial(self.add, term=2)
         add_2.__name__ = 'add_2'
-        add_3: Callable[[pd.Series], pd.Series] = partial(self.add, n=3)
+        add_3: Callable[[pd.Series], pd.Series] = partial(self.add, term=3)
         add_3.__name__ = 'add_3'
 
         # MultiIndex DataFrame is generated
@@ -50,9 +50,9 @@ class TestFunctionApplication(TestCase):
     def test_transform_series_named_functions(self):
         series: pd.Series = pd.Series(np.ones(2, dtype=int))
 
-        add_1: Callable[[pd.Series], pd.Series] = partial(self.add, n=1)
+        add_1: Callable[[pd.Series], pd.Series] = partial(self.add, term=1)
         add_1.__name__ = 'add_1'
-        add_2: Callable[[pd.Series], pd.Series] = partial(self.add, n=2)
+        add_2: Callable[[pd.Series], pd.Series] = partial(self.add, term=2)
         add_2.__name__ = 'add_2'
 
         result: pd.DataFrame = series.transform([add_1, add_2]).astype(int)
