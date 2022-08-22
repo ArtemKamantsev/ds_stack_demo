@@ -37,7 +37,7 @@ class Sequential(tf.keras.layers.Layer):
         return self.dense_2(x)
 
 
-_save_path: str = '../output/saved'
+_save_path: str = './output/saved'
 
 
 class TestModelSaving(TestCase):

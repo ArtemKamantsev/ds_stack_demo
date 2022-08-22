@@ -17,7 +17,7 @@ class CustomModule(tf.Module):
         return inputs * self.weight
 
 
-_save_path: str = '../output/saved'
+_save_path: str = './output/saved'
 
 
 class TestModelSaving(TestCase):

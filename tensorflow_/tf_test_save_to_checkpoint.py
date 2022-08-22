@@ -26,6 +26,9 @@ class FlexibleDenseModule(tf.Module):
         return tf.nn.relu(y)
 
 
+_save_path: str = './output/checkpoint'
+
+
 class SequentialModule(tf.Module):
     dense_1: FlexibleDenseModule
     dense_2: FlexibleDenseModule
@@ -47,11 +50,10 @@ class TestSavingToCheckpoint(TestCase):
         data: tf.Tensor = tf.constant([[2.0, 2.0, 2.0]])
         prediction_original: tf.Tensor = model_original(data)
 
-        checkpoint_path: str = "../output/checkpoint"
         checkpoint = tf.train.Checkpoint(model=model_original)
-        checkpoint.write(checkpoint_path)
+        checkpoint.write(_save_path)
 
-        variables_saved: list[tuple[str, list[int]]] = tf.train.list_variables(checkpoint_path)
+        variables_saved: list[tuple[str, list[int]]] = tf.train.list_variables(_save_path)
         variable_names: tuple[str]
         variable_shapes: tuple[list[int] | tuple[int, ...], ...]
         variable_names, variable_shapes = zip(*variables_saved)
@@ -66,7 +68,7 @@ class TestSavingToCheckpoint(TestCase):
 
         model_restored = SequentialModule()
         checkpoint_restore = tf.train.Checkpoint(model=model_restored)
-        checkpoint_restore.restore("../output/checkpoint")
+        checkpoint_restore.restore(_save_path)
         prediction_restored = model_restored(data)
 
         # noinspection PyTypeChecker
