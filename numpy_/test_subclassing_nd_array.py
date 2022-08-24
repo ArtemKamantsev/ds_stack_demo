@@ -12,7 +12,7 @@ class FixedValue1DArray(np.ndarray):
             return NotImplemented
 
         obj: FixedValue1DArray = np.asarray(input_array).view(cls)
-        obj.value = value
+        obj._FixedValue1DArray__value = value
         obj.ensure_value()
 
         return obj
@@ -21,13 +21,13 @@ class FixedValue1DArray(np.ndarray):
     def __array_finalize__(self, obj: np.ndarray, *args: Sequence[Any], **kwargs: dict[Any, Any]) -> None:
         if obj is not None:
             # pylint: disable=attribute-defined-outside-init
-            self.value = getattr(obj, 'value', 42)
+            self.__value = getattr(obj, '_FixedValue1DArray__value', 42)
 
         self.ensure_value()
 
     def ensure_value(self) -> None:
         for i in range(self.shape[0]):
-            self[i] = self.value
+            self[i] = self.__value
 
 
 class TestSubclassing(TestCase):

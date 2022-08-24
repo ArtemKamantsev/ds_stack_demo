@@ -29,7 +29,7 @@ def _increment_shared_memory_at(data: ShareableList, idx: int) -> None:
     data[idx] += 1
 
 
-class DataExchange(TestCase):
+class TestProcesses(TestCase):
 
     def test_queue(self) -> None:
         queue: Queue = Queue()

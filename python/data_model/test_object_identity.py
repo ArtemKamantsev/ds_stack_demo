@@ -2,10 +2,10 @@ from unittest import TestCase
 
 
 class Mock:
-    param: str | int
+    __param: str | int
 
     def __init__(self, param: str | int) -> None:
-        self.param = param
+        self.__param = param
 
 
 class ObjectId(TestCase):

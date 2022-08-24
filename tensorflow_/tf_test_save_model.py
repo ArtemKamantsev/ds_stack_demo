@@ -6,15 +6,15 @@ import tensorflow as tf
 
 
 class CustomModule(tf.Module):
-    weight: tf.Variable
+    __weights: tf.Variable
 
     def __init__(self, factor: Number):
         super().__init__()
-        self.weight = tf.Variable(factor)
+        self.__weights = tf.Variable(factor)
 
     @tf.function
     def multiply(self, inputs: tf.Tensor) -> tf.Tensor:
-        return inputs * self.weight
+        return inputs * self.__weights
 
 
 _save_path: str = './output/saved'

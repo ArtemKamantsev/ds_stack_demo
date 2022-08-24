@@ -5,37 +5,43 @@ import tensorflow as tf
 
 
 class FlexibleDense(tf.keras.layers.Layer):
-    out_features: int
-    weights_local: tf.Variable
-    biases_local: tf.Variable
+    __out_features: int
+    __weights: tf.Variable
+    __biases: tf.Variable
 
     def __init__(self, out_features: int, **kwargs):
         super().__init__(**kwargs)
-        self.out_features = out_features
+        self.__out_features = out_features
 
     def build(self, input_shape):
-        self.weights_local = tf.Variable(
-                tf.random.normal([input_shape[-1], self.out_features]), name='weights')
-        self.biases_local = tf.Variable(tf.zeros([self.out_features]), name='biases_local')
+        self.__weights = tf.Variable(
+                tf.random.normal([input_shape[-1], self.__out_features]), name='weights')
+        self.__biases = tf.Variable(tf.zeros([self.__out_features]), name='biases')
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        return tf.matmul(inputs, self.weights_local) + self.biases_local
+        return tf.matmul(inputs, self.__weights) + self.__biases
+
+    def get_config(self) -> dict[str, Any]:
+        return {"out_features": self.__out_features}
 
 
 class Sequential(tf.keras.Model):
-    dense_1: FlexibleDense
-    dense_2: FlexibleDense
+    __dense_1: FlexibleDense
+    __dense_2: FlexibleDense
 
     def __init__(self, name=None):
         super().__init__(name=name)
 
-        self.dense_1 = FlexibleDense(out_features=3)
-        self.dense_2 = FlexibleDense(out_features=2)
+        self.__dense_1 = FlexibleDense(out_features=3)
+        self.__dense_2 = FlexibleDense(out_features=2)
 
     # noinspection PyCallingNonCallable
     def call(self, x: tf.Tensor) -> tf.Tensor:
-        x = self.dense_1(x)
-        return self.dense_2(x)
+        x = self.__dense_1(x)
+        return self.__dense_2(x)
+
+    def get_config(self):
+        return {"name": self.name, **super().get_config()}
 
 
 _save_path: str = './output/saved'
