@@ -20,6 +20,7 @@ class TestMiscellaneous(TestCase):
     def test_inf(self) -> None:
         array: np.ndarray = np.array([-np.inf, 42, np.inf])
 
+        self.assertTrue(np.inf == np.inf)
         self.assertTrue(np.isinf(array[0]))
         self.assertTrue(np.isfinite(array[1]))
         self.assertTrue(np.isinf(array[2]))

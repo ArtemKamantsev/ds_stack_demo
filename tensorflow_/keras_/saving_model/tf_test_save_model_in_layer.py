@@ -1,6 +1,9 @@
+from os.path import join
 from unittest import TestCase
 
 import tensorflow as tf
+
+from constants import OUTPUT_PATH
 
 
 class FlexibleDense(tf.keras.Model):
@@ -37,7 +40,7 @@ class Sequential(tf.keras.layers.Layer):
         return self.dense_2(x)
 
 
-_save_path: str = './output/saved'
+_save_path: str = join(OUTPUT_PATH, 'saved')
 
 
 class TestModelSaving(TestCase):
@@ -53,4 +56,4 @@ class TestModelSaving(TestCase):
         model_reloaded = tf.saved_model.load(_save_path)
 
         with self.assertRaises(ValueError):
-            prediction_reloaded = model_reloaded(data)
+            prediction_reloaded: tf.Tensor = model_reloaded(data)

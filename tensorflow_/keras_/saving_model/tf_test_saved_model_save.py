@@ -1,7 +1,10 @@
-from unittest import TestCase
+from os.path import join
 from typing import Any
+from unittest import TestCase
 
 import tensorflow as tf
+
+from constants import OUTPUT_PATH
 
 
 class FlexibleDense(tf.keras.layers.Layer):
@@ -44,7 +47,7 @@ class Sequential(tf.keras.Model):
         return {"name": self.name, **super().get_config()}
 
 
-_save_path: str = './output/saved'
+_save_path: str = join(OUTPUT_PATH, 'saved')
 
 
 class TestModelSaving(TestCase):
@@ -86,3 +89,4 @@ class TestModelSaving(TestCase):
         prediction_comparison: tf.Tensor = prediction_reloaded == prediction_original
 
         self.assertTrue(prediction_comparison.numpy().all())
+        self.assertIsNot(type(model_reloaded), Sequential)  # the graph only has been retrieved
