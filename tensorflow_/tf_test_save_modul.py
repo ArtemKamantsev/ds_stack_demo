@@ -1,7 +1,8 @@
 from numbers import Number
+from os.path import join
 from typing import Any
 from unittest import TestCase
-from os.path import join
+
 import tensorflow as tf
 
 
