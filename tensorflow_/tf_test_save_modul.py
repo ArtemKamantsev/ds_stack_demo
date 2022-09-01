@@ -6,6 +6,7 @@ from unittest import TestCase
 import tensorflow as tf
 
 
+# pylint: disable=abstract-method
 class CustomModule(tf.Module):
     __weights: tf.Variable
 
@@ -29,6 +30,7 @@ class TestModelSaving(TestCase):
         tf.saved_model.save(model_original, _save_path)
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(ValueError):  # Found zero restored functions for caller function.
+            # pylint: disable=unused-variable
             prediction_reloaded_signature1: tf.Tensor = model_reloaded.multiply(data)
 
     def test_save_with_evaluation(self) -> None:
@@ -46,6 +48,7 @@ class TestModelSaving(TestCase):
         model_reloaded: Any = tf.saved_model.load(_save_path)
         prediction_reloaded_signature1: tf.Tensor = model_reloaded.multiply(data_signature1)
         with self.assertRaises(ValueError):  # can not use data with different shape on reloaded model
+            # pylint: disable=unused-variable
             prediction_reloaded_signature2: tf.Tensor = model_reloaded.multiply(data_signature2)
         # noinspection PyTypeChecker
         prediction_comparison_signature1: tf.Tensor = prediction_reloaded_signature1 == prediction_original_signature1

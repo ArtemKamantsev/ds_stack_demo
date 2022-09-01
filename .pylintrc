@@ -242,6 +242,8 @@ function-rgx=([a-z0-9_]{2,30}|f)$
 good-names=i,
            j,
            k,
+           x,
+           y,
            ex,
            Run,
            _,

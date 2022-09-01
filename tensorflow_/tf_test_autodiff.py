@@ -74,6 +74,7 @@ class TestAutodiff(TestCase):
             new_image: tf.Tensor = tf.image.adjust_contrast(image, delta)
 
         with self.assertRaises(LookupError):
+            # pylint: disable=unused-variable
             grad: list[tf.Tensor] = tape.gradient(new_image, [image, delta])
 
     def test_several_gradients_computation(self):

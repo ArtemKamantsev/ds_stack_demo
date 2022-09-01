@@ -3,6 +3,7 @@ from unittest import TestCase
 import tensorflow as tf
 
 
+# pylint: disable=abstract-method
 class FlexibleDenseModule(tf.Module):
     out_features: int
     __is_built: bool
@@ -29,6 +30,7 @@ class FlexibleDenseModule(tf.Module):
 _save_path: str = './output/checkpoint'
 
 
+# pylint: disable=abstract-method
 class SequentialModule(tf.Module):
     __dense_1: FlexibleDenseModule
     __dense_2: FlexibleDenseModule
@@ -60,10 +62,14 @@ class TestSavingToCheckpoint(TestCase):
         variable_shapes = tuple(tuple(shape) for shape in variable_shapes)
 
         self.assertEqual(variable_names, ('_CHECKPOINTABLE_OBJECT_GRAPH',
-                                          'model/_SequentialModule__dense_1/_FlexibleDenseModule__bias/.ATTRIBUTES/VARIABLE_VALUE',
-                                          'model/_SequentialModule__dense_1/_FlexibleDenseModule__weights/.ATTRIBUTES/VARIABLE_VALUE',
-                                          'model/_SequentialModule__dense_2/_FlexibleDenseModule__bias/.ATTRIBUTES/VARIABLE_VALUE',
-                                          'model/_SequentialModule__dense_2/_FlexibleDenseModule__weights/.ATTRIBUTES/VARIABLE_VALUE'))
+                                          'model/_SequentialModule__dense_1/_FlexibleDenseModule__bias/'
+                                          '.ATTRIBUTES/VARIABLE_VALUE',
+                                          'model/_SequentialModule__dense_1/_FlexibleDenseModule__weights/'
+                                          '.ATTRIBUTES/VARIABLE_VALUE',
+                                          'model/_SequentialModule__dense_2/_FlexibleDenseModule__bias/'
+                                          '.ATTRIBUTES/VARIABLE_VALUE',
+                                          'model/_SequentialModule__dense_2/_FlexibleDenseModule__weights/'
+                                          '.ATTRIBUTES/VARIABLE_VALUE'))
         self.assertEqual(variable_shapes, ((), (3,), (3, 3), (2,), (3, 2)))
 
         model_restored = SequentialModule()
