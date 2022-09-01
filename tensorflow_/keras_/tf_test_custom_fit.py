@@ -10,7 +10,7 @@ class TestCustomFit(TestCase):
             @tf.function  # won't give any performance gain on 1 run, but in general should be used
             def train_step(self, inputs: tuple[tf.Tensor, tf.Tensor]) -> dict[str, float]:
                 batch_data: tf.Tensor
-                batch_inputs: tf.Tensor
+                batch_labels: tf.Tensor
                 batch_data, batch_labels = inputs
                 y_pred: tf.Tensor = batch_data
 

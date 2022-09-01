@@ -57,6 +57,7 @@ class TestModelSaving(TestCase):
 
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(TypeError):
+            # pylint: disable=unused-variable
             prediction: tf.Tensor = model_reloaded(tf.constant([[2.0, 2.0, 2.0]]))
 
     def test_compiled_model(self) -> None:
@@ -66,6 +67,7 @@ class TestModelSaving(TestCase):
 
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(TypeError):
+            # pylint: disable=unused-variable
             prediction: tf.Tensor = model_reloaded(tf.constant([[2.0, 2.0, 2.0]]))
 
     def test_save_built_model(self) -> None:

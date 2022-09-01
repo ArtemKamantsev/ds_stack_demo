@@ -56,4 +56,5 @@ class TestModelSaving(TestCase):
         model_reloaded = tf.saved_model.load(_save_path)
 
         with self.assertRaises(ValueError):
+            # pylint: disable=unused-variable
             prediction_reloaded: tf.Tensor = model_reloaded(data)

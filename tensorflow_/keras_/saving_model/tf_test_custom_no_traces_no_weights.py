@@ -45,7 +45,7 @@ class TestCustomNoTracesNoWeight(TestCase):
 
         model = SimplestCustomModel()
         model.save(_save_path, save_traces=False)
-        model_reloaded: CustomModelFake = tf.keras.models.load_model(_save_path,
+        model_reloaded: FakeCustomModel = tf.keras.models.load_model(_save_path,
                                                                      compile=False,
                                                                      custom_objects={
                                                                          'SimplestCustomModel': FakeCustomModel
@@ -63,20 +63,23 @@ class TestCustomNoTracesNoWeight(TestCase):
         model = CustomModelWithParam(42)
         model.save(_save_path, save_traces=False)
         with self.assertRaises(TypeError):
-            model_reloaded: CustomModelWithParam = tf.keras.models.load_model(_save_path,
-                                                                              compile=False,
-                                                                              custom_objects={
-                                                                                  'CustomModelWithParam': CustomModelWithParam
-                                                                              },
-                                                                              )
+            # pylint: disable=unused-variable
+            model_reloaded: CustomModelWithParam = \
+                tf.keras.models.load_model(_save_path,
+                                           compile=False,
+                                           custom_objects={
+                                               'CustomModelWithParam': CustomModelWithParam
+                                           },
+                                           )
 
     def test_without_traces_with_param_config(self) -> None:
         model = CustomModelWithParamConfig(42)
         model.save(_save_path, save_traces=False)
-        model_reloaded: CustomModelWithParamConfig = tf.keras.models.load_model(_save_path,
-                                                                                compile=False,
-                                                                                custom_objects={
-                                                                                    'CustomModelWithParamConfig': CustomModelWithParamConfig
-                                                                                },
-                                                                                )
-        self.assertEqual(model_reloaded._value.numpy(), 43)
+        model_reloaded: CustomModelWithParamConfig = \
+            tf.keras.models.load_model(_save_path,
+                                       compile=False,
+                                       custom_objects={
+                                           'CustomModelWithParamConfig': CustomModelWithParamConfig
+                                       },
+                                       )
+        self.assertEqual(model_reloaded.value.numpy(), 43)

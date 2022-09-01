@@ -50,6 +50,7 @@ class TestLayers(TestCase):
                 return tf.matmul(value, self._weights)
 
         layer = IrregularDense(1, input_shape=(1,))
+        # pylint: disable=unused-variable
         model = tf.keras.Sequential([layer])
 
         self.assertEqual(len(layer.sublayer.weights), 1)
@@ -57,7 +58,7 @@ class TestLayers(TestCase):
 
     def test_training_param(self) -> None:
         class DifferentBehaviourLayer(tf.keras.layers.Layer):
-            def call(self, inputs: tf.Tensor, training: bool | None = None) -> tf.Tensor:
+            def call(self, _: tf.Tensor, training: bool | None = None) -> tf.Tensor:
                 if training:
                     return tf.constant([1.0])
 
@@ -79,6 +80,3 @@ class TestLayers(TestCase):
 
         self.assertAlmostEqual(history.history['loss'][0], 0.0)
         self.assertAlmostEqual(eval_loss, target_loss)
-
-
-

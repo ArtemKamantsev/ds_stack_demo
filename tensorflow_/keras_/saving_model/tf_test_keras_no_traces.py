@@ -36,6 +36,7 @@ class TestKerasNoTraces(TestCase):
 
         model.save(_save_path, save_traces=False)
         with self.assertRaises(ValueError):
+            # pylint: disable=unused-variable
             model_reloaded: tf.keras.Sequential = tf.keras.models.load_model(_save_path)
 
     def test_without_traces_input_shape(self) -> None:

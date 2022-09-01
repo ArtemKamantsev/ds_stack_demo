@@ -28,6 +28,7 @@ class TestCustomNoTracesWeights(TestCase):
 
         self.assertIsNot(type(model_reloaded), CustomModelWithWeights)
         with self.assertRaises(ValueError):
+            # pylint: disable=unused-variable
             prediction_reloaded: tf.Tensor = model_reloaded(tf.constant([42.0]))
 
     def test_without_traces_built(self) -> None:
@@ -43,4 +44,5 @@ class TestCustomNoTracesWeights(TestCase):
 
         self.assertIsNot(type(model_reloaded), CustomModelWithWeights)
         with self.assertRaises(ValueError):
+            # pylint: disable=unused-variable
             prediction_reloaded: tf.Tensor = model_reloaded(tf.constant([42.0]))

@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 
+# pylint: disable=protected-access
 class TestMaskingAndPadding(TestCase):
     def test_padding(self) -> None:
         sequence_list: list[list[int]] = [
@@ -71,4 +72,3 @@ class TestMaskingAndPadding(TestCase):
         self.assertTrue((output1._keras_mask.numpy() == [[False, True]]).all().all())
         self.assertTrue((output2.numpy() == [7]).all())
         self.assertFalse(hasattr(output2, '_keras_mask'))
-

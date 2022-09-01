@@ -47,17 +47,19 @@ class TestCustomTracesNoWeight(TestCase):
         model = CustomModelWithParam(42)
         data: tf.Tensor = tf.constant(42)
         # noinspection PyCallingNonCallable
-        prediction: tf.Tensor = model(data)
+        model(data)
 
         model.save(_save_path)
         with self.assertRaises(TypeError):
             # Despite calculation graph could be loaded instead of model, exception is raised
-            model_reloaded: CustomModelWithParam = tf.keras.models.load_model(_save_path,
-                                                                              compile=False,
-                                                                              custom_objects={
-                                                                                  'CustomModelWithParam': CustomModelWithParam
-                                                                              },
-                                                                              )
+            # pylint: disable=unused-variable
+            model_reloaded: CustomModelWithParam = \
+                tf.keras.models.load_model(_save_path,
+                                           compile=False,
+                                           custom_objects={
+                                               'CustomModelWithParam': CustomModelWithParam
+                                           },
+                                           )
 
     # noinspection PyCallingNonCallable
     def test_without_traces(self) -> None:
