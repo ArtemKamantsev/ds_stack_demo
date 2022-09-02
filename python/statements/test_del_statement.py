@@ -47,3 +47,12 @@ class DelStatement(TestCase):
                                               'the local namespace if it occurs as a free variable in a nested block.'):
             # pylint: disable=unused-variable
             value: int = free_variable
+
+    def test_on_global_value_as_free_variable(self) -> None:
+        with self.assertRaises(UnboundLocalError):
+            # pylint: disable=unused-variable
+            value: int = GLOBAL_VALUE  # use is as a free variable
+
+        with self.assertRaises(UnboundLocalError):
+            # pylint: disable=redefined-outer-name
+            del GLOBAL_VALUE  # this statement forces interpreter to treat GLOBAL_VALUE as local variable
