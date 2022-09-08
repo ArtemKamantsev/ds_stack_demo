@@ -1,10 +1,11 @@
 import asyncio
 import time
+import warnings
 from asyncio import Task, Future
+from collections.abc import Coroutine, Awaitable
 from concurrent.futures import ThreadPoolExecutor, Future as ConcurrentFuture
 from threading import Thread
 from typing import Any
-from collections.abc import Coroutine, Awaitable
 from unittest import TestCase
 
 
@@ -20,6 +21,10 @@ class TestCoroutines(TestCase):
         self.assertEqual(result, 42)
 
     def test_double_event_loop(self) -> None:
+        warnings.filterwarnings('ignore',
+                                r'coroutine \'TestCoroutines\.test_double_event_loop\.<locals>\.set_value\' '
+                                r'was never awaited',
+                                category=RuntimeWarning)
         value: int = 0
 
         async def set_value(new_value: int) -> None:
@@ -48,13 +53,16 @@ class TestCoroutines(TestCase):
             data.add(num)
 
         with self.assertRaises(RuntimeError):
+            warnings.filterwarnings('ignore',
+                                    r'coroutine \'TestCoroutines.test_tasks\.<locals>\.put\' was never awaited',
+                                    category=RuntimeWarning)
             # there is no event loop
             asyncio.create_task(put(42))
 
         async def run() -> None:
             await asyncio.gather(
-                asyncio.create_task(put(0)),
-                put(1),  # will be wrapped to task internally
+                    asyncio.create_task(put(0)),
+                    put(1),  # will be wrapped to task internally
             )
 
         asyncio.run(run())
@@ -75,6 +83,7 @@ class TestCoroutines(TestCase):
             coro: Coroutine[Any, Any, int] = get()
             task2_shield: Future[int] = asyncio.shield(coro)
             task2_shield.cancel()
+            # raises exception in task2_shield, todo: handle this exception somehow to remove warning message
             res: int = await coro
             self.assertEqual(res, 42)
 
