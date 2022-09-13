@@ -5,43 +5,44 @@ from unittest import TestCase
 import tensorflow as tf
 
 from constants import OUTPUT_PATH
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
 
 
 class FlexibleDense(tf.keras.layers.Layer):
-    __out_features: int
-    __weights: tf.Variable
-    __biases: tf.Variable
+    _out_features: int
+    _weights: tf.Variable
+    _biases: tf.Variable
 
     def __init__(self, out_features: int, **kwargs):
         super().__init__(**kwargs)
-        self.__out_features = out_features
+        self._out_features = out_features
 
     def build(self, input_shape):
-        self.__weights = tf.Variable(
-                tf.random.normal([input_shape[-1], self.__out_features]), name='weights')
-        self.__biases = tf.Variable(tf.zeros([self.__out_features]), name='biases')
+        self._weights = tf.Variable(
+                tf.random.normal([input_shape[-1], self._out_features]), name='weights')
+        self._biases = tf.Variable(tf.zeros([self._out_features]), name='biases')
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        return tf.matmul(inputs, self.__weights) + self.__biases
+        return tf.matmul(inputs, self._weights) + self._biases
 
     def get_config(self) -> dict[str, Any]:
-        return {"out_features": self.__out_features}
+        return {"out_features": self._out_features}
 
 
 class Sequential(tf.keras.Model):
-    __dense_1: FlexibleDense
-    __dense_2: FlexibleDense
+    _dense_1: FlexibleDense
+    _dense_2: FlexibleDense
 
     def __init__(self, name=None):
         super().__init__(name=name)
 
-        self.__dense_1 = FlexibleDense(out_features=3)
-        self.__dense_2 = FlexibleDense(out_features=2)
+        self._dense_1 = FlexibleDense(out_features=3)
+        self._dense_2 = FlexibleDense(out_features=2)
 
     # noinspection PyCallingNonCallable
     def call(self, x: tf.Tensor) -> tf.Tensor:
-        x = self.__dense_1(x)
-        return self.__dense_2(x)
+        x = self._dense_1(x)
+        return self._dense_2(x)
 
     def get_config(self):
         return {"name": self.name, **super().get_config()}
@@ -53,7 +54,8 @@ _save_path: str = join(OUTPUT_PATH, 'saved')
 class TestModelSaving(TestCase):
     def test_save_raw_model(self) -> None:
         model = Sequential(name='the_model')
-        tf.saved_model.save(model, _save_path)
+        with SuppressTFWarnings():
+            tf.saved_model.save(model, _save_path)
 
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(TypeError):
@@ -63,7 +65,8 @@ class TestModelSaving(TestCase):
     def test_compiled_model(self) -> None:
         model = Sequential(name='the_model')
         model.compile()
-        tf.saved_model.save(model, _save_path)
+        with SuppressTFWarnings():
+            tf.saved_model.save(model, _save_path)
 
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(TypeError):

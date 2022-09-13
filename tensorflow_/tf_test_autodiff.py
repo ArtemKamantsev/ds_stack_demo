@@ -2,6 +2,8 @@ from unittest import TestCase
 
 import tensorflow as tf
 
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
+
 
 class TestAutodiff(TestCase):
     def test_default_watch_behaviour(self) -> None:
@@ -48,7 +50,8 @@ class TestAutodiff(TestCase):
 
         with tf.GradientTape() as tape:
             y = trainable_int ** 2
-        trainable_int_grad: tf.Tensor = tape.gradient(y, trainable_int)
+        with SuppressTFWarnings():
+            trainable_int_grad: tf.Tensor = tape.gradient(y, trainable_int)
 
         self.assertIsNone(trainable_int_grad)
 

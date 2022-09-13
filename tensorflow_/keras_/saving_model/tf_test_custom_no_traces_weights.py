@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from constants import OUTPUT_PATH
 from .models import CustomModelWithWeights
+from ...suppress_tf_warning import SuppressTFWarnings
 
 _save_path: str = join(OUTPUT_PATH, 'saved')
 
@@ -16,7 +17,8 @@ class TestCustomNoTracesWeights(TestCase):
         model = CustomModelWithWeights(42.0)
 
         with self.assertRaises(ValueError):
-            model.save(_save_path)
+            with SuppressTFWarnings():
+                model.save(_save_path)
 
     def test_without_traces(self) -> None:
         model = CustomModelWithWeights(42.0)

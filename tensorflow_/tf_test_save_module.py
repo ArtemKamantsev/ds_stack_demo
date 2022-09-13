@@ -7,16 +7,19 @@ import tensorflow as tf
 
 
 # pylint: disable=abstract-method
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
+
+
 class CustomModule(tf.Module):
-    __weights: tf.Variable
+    _weights: tf.Variable
 
     def __init__(self, factor: Number):
         super().__init__()
-        self.__weights = tf.Variable(factor)
+        self._weights = tf.Variable(factor)
 
     @tf.function
     def multiply(self, inputs: tf.Tensor) -> tf.Tensor:
-        return inputs * self.__weights
+        return inputs * self._weights
 
 
 _save_path: str = './output/saved'
@@ -27,7 +30,8 @@ class TestModelSaving(TestCase):
         data: tf.Tensor = tf.constant([1, 2, 3])
         model_original = CustomModule(2)
 
-        tf.saved_model.save(model_original, _save_path)
+        with SuppressTFWarnings():
+            tf.saved_model.save(model_original, _save_path)
         model_reloaded: Any = tf.saved_model.load(_save_path)
         with self.assertRaises(ValueError):  # Found zero restored functions for caller function.
             # pylint: disable=unused-variable
@@ -67,7 +71,7 @@ class TestModelSaving(TestCase):
 
         model_restored = CustomModule(-1)
         checkpoint_restore = tf.train.Checkpoint(model=model_restored)
-        checkpoint_restore.restore(join(_save_path, 'variables', 'variables'))
+        checkpoint_restore.restore(join(_save_path, 'variables', 'variables')).expect_partial()
         prediction_restored = model_restored.multiply(data)
 
         prediction_comparison: tf.Tensor = prediction_restored != prediction_original

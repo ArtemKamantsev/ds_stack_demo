@@ -4,6 +4,7 @@ from unittest import TestCase
 import tensorflow as tf
 
 from constants import OUTPUT_PATH
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
 
 
 class FlexibleDense(tf.keras.Model):
@@ -45,16 +46,18 @@ _save_path: str = join(OUTPUT_PATH, 'saved')
 
 class TestModelSaving(TestCase):
     def test_save_model(self) -> None:
-        data: tf.Tensor = tf.constant([[2.0, 2.0, 2.0]])
-        model = Sequential(name='the_model')
-        # noinspection PyCallingNonCallable
-        prediction_original = model(data)
+        with SuppressTFWarnings():
+            data: tf.Tensor = tf.constant([[2.0, 2.0, 2.0]])
+            model = Sequential(name='the_model')
+            # noinspection PyCallingNonCallable
+            prediction_original = model(data)
 
-        self.assertIsNotNone(tf.math.reduce_sum(prediction_original).numpy())
+            self.assertIsNotNone(tf.math.reduce_sum(prediction_original).numpy())
 
-        tf.saved_model.save(model, _save_path)
-        model_reloaded = tf.saved_model.load(_save_path)
 
-        with self.assertRaises(ValueError):
-            # pylint: disable=unused-variable
-            prediction_reloaded: tf.Tensor = model_reloaded(data)
+            tf.saved_model.save(model, _save_path)
+            model_reloaded = tf.saved_model.load(_save_path)
+
+            with self.assertRaises(ValueError):
+                # pylint: disable=unused-variable
+                prediction_reloaded: tf.Tensor = model_reloaded(data)

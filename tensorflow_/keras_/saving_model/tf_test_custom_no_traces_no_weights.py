@@ -4,6 +4,7 @@ from unittest import TestCase
 import tensorflow as tf
 
 from constants import OUTPUT_PATH
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
 from .models import SimplestCustomModel, CustomModelWithParam, CustomModelWithParamConfig
 
 _save_path: str = join(OUTPUT_PATH, 'saved')
@@ -14,7 +15,8 @@ class TestCustomNoTracesNoWeight(TestCase):
         model = SimplestCustomModel()
 
         with self.assertRaises(ValueError):
-            model.save(_save_path)
+            with SuppressTFWarnings():
+                model.save(_save_path)
 
     # noinspection PyCallingNonCallable
     def test_without_traces(self) -> None:
@@ -61,6 +63,7 @@ class TestCustomNoTracesNoWeight(TestCase):
 
     def test_without_traces_with_param(self) -> None:
         model = CustomModelWithParam(42)
+        # pylint: disable=duplicate-code
         model.save(_save_path, save_traces=False)
         with self.assertRaises(TypeError):
             # pylint: disable=unused-variable

@@ -2,6 +2,8 @@ from unittest import TestCase
 
 import tensorflow as tf
 
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
+
 
 class TestDataset(TestCase):
     def test_steps_per_epoch_param(self):
@@ -14,8 +16,10 @@ class TestDataset(TestCase):
 
         epochs: int = 4
         dataset: tf.data.Dataset = tf.data.Dataset.from_tensor_slices(([[0], [1], [2], [3]], [0, 1, 2, 3])).batch(1)
-        history: dict[str: list[float]] = model.fit(dataset, epochs=epochs, verbose=0).history
-        self.assertEqual(len(history['loss']), epochs)
+        # history: dict[str: list[float]] = model.fit(dataset, epochs=epochs, verbose=0).history
+        # self.assertEqual(len(history['loss']), epochs)
 
-        history: dict[str: list[float]] = model.fit(dataset, epochs=epochs, verbose=0, steps_per_epoch=2).history
+        with SuppressTFWarnings():
+            # trying to get more then epochs * steps_per_epoch batches from dataset
+            history: dict[str: list[float]] = model.fit(dataset, epochs=epochs, verbose=0, steps_per_epoch=2).history
         self.assertLess(len(history['loss']), epochs)

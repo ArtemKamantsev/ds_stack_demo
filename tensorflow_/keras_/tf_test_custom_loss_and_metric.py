@@ -3,17 +3,21 @@ from unittest import TestCase
 
 import tensorflow as tf
 
+from tensorflow_.suppress_tf_warning import SuppressTFWarnings
+
 
 class TestCustomLossAndMetric(TestCase):
     _constant: float
     _target: float
+    x: tf.Tensor
+    y: tf.Tensor
 
     def setUp(self) -> None:
         self._constant: float = 40.0
         self._target: float = 42.0
 
-        self.x = [[self._constant]]
-        self.y = [self._target]
+        self._x = tf.constant([[self._constant]])
+        self._y = tf.constant([self._target])
 
     @staticmethod
     def __build_model(main_layer: tf.keras.layers.Layer | None = None,
@@ -31,9 +35,10 @@ class TestCustomLossAndMetric(TestCase):
         return model
 
     def __evaluate_model(self, model: tf.keras.Model) -> float | list[float]:
-        model.fit(self.x, self.y, epochs=1, batch_size=1, verbose=0)
+        with SuppressTFWarnings():
+            model.fit(self._x, self._y, epochs=1, batch_size=1, verbose=0)
 
-        return model.evaluate(self.x, self.y, batch_size=1, verbose=0)
+            return model.evaluate(self._x, self._y, batch_size=1, verbose=0)
 
     def test_dummy_model(self) -> None:
         target_loss: float = (self._target - self._constant) ** 2

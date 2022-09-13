@@ -14,6 +14,7 @@ class TestCustomTracesNoWeight(TestCase):
     # noinspection PyCallingNonCallable
     def test_with_traces(self) -> None:
         model = SimplestCustomModel()
+        # pylint: disable=duplicate-code
         data: tf.Tensor = tf.constant(42)
         prediction: tf.Tensor = model(data)
 
