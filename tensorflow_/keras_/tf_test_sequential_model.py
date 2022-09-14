@@ -3,6 +3,7 @@ from unittest import TestCase
 import tensorflow as tf
 from tensorflow import keras
 
+
 class TestSequential(TestCase):
     def test_without_input_shape(self) -> None:
         layer = keras.layers.Dense(1)

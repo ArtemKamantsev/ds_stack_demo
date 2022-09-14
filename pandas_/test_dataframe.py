@@ -59,7 +59,7 @@ class TestDataFrame(TestCase):
     def test_series_broadcasting(self) -> None:
         df: pd.DataFrame = pd.DataFrame(np.arange(20).reshape((10, 2)), columns=["A", "B"], dtype=int)
 
-        result: pd.Series = df - df.iloc[0]
+        result: pd.DataFrame = df - df.iloc[0]
         self.assertTrue((result.iloc[0] == 0).all())
 
     def test_df_equality(self) -> None:
@@ -76,7 +76,8 @@ class TestDataFrame(TestCase):
                                           [2, np.nan]], dtype='Int64')
 
         result: pd.DataFrame = df1.combine_first(df2)
-        target_result: pd.DataFrame = pd.DataFrame([[0, np.nan], [2, 1]], dtype='Int64')
+        target_result: pd.DataFrame = pd.DataFrame([[0, np.nan],
+                                                    [2, 1]], dtype='Int64')
 
         self.assertTrue(result.equals(target_result))
 
