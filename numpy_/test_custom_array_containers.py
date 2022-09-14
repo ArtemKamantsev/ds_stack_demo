@@ -1,7 +1,8 @@
+from collections.abc import Collection, Sequence
 from numbers import Number
 from typing import Callable, Any
 from unittest import TestCase
-from collections.abc import Collection, Sequence
+
 import numpy as np
 
 
@@ -19,6 +20,7 @@ class RandomImage:
         return random_image.astype(dtype)
 
 
+# np.lib.mixins.NDArrayOperatorsMixin overrides __add__, __lt__ and so on via usage u-functions
 class ValueHolder(np.lib.mixins.NDArrayOperatorsMixin):
     value: int
 
@@ -26,6 +28,7 @@ class ValueHolder(np.lib.mixins.NDArrayOperatorsMixin):
         self.value = value
 
 
+# u-function custom handling example
 class RegularValue(ValueHolder):
     def __array_ufunc__(self, ufunc: Callable[..., int], method: str,
                         *inputs: list[Any], **kwargs: dict[Any, Any]) -> 'RegularValue':
@@ -66,6 +69,7 @@ class TrickyValue(ValueHolder):
 HANDLED_FUNCTIONS: dict[Callable, Callable[..., 'ValueWithFunctions']] = {}
 
 
+# non u-function custom handling example
 class ValueWithFunctions(ValueHolder):
     def __array_function__(self, func: Callable, types: Collection[type],
                            args: Sequence[Any], kwargs: dict[Any, Any]) -> Any:
@@ -89,8 +93,8 @@ def implements(np_function: Callable):
 
 
 @implements(np.sum)
-def square(person: ValueWithFunctions) -> ValueWithFunctions:
-    return ValueWithFunctions(person.value ** 2)
+def square(value: ValueWithFunctions) -> ValueWithFunctions:
+    return ValueWithFunctions(value.value ** 2)
 
 
 class TestCustomArrayContainers(TestCase):
@@ -115,11 +119,11 @@ class TestCustomArrayContainers(TestCase):
         self.assertLess(random_image_scaled.max(initial=-1), 1)
 
     def test_pass_through_np_u_function(self) -> None:
-        regula_value: RegularValue = RegularValue(17)
+        regular_value: RegularValue = RegularValue(17)
 
         # noinspection PyTypeChecker
         # pylint: disable=no-member
-        result: RegularValue = np.add(regula_value, 1)
+        result: RegularValue = np.add(regular_value, 1)
         self.assertTrue(isinstance(result, RegularValue))
         self.assertEqual(result.value, 18)
 
@@ -133,7 +137,7 @@ class TestCustomArrayContainers(TestCase):
 
         with self.assertRaises(TypeError):
             # noinspection PyTypeChecker
-            result = np.sum(regula_value)
+            result = np.sum(regular_value)
 
     def test_pass_custom_np_u_function_priorities(self) -> None:
         value_regular: RegularValue = RegularValue(1)

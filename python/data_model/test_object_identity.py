@@ -2,6 +2,7 @@ from unittest import TestCase
 
 
 class Mock:
+    # pylint: disable=unused-private-member
     __param: str | int
 
     def __init__(self, param: str | int) -> None:
